@@ -70,11 +70,44 @@ class RecordMenu(InteractiveMenu):
 
 class ReadMenu(InteractiveMenu):
 
+    def __init__(self, manager, path):
+        super().__init__(manager, path)
+        self.sub_menu_modules = [
+            TotalsMenu(manager, self.path)
+        ]
+
     def title(self):
         return "Read"
 
+class TotalsMenu(InteractiveMenu):
+
+    def title(self):
+        return "Totals"
 
     def main_loop(self):
+        all_goals = {}
         all_goal_progress_rows = self.manager.read_goal_progress()
         for progress in all_goal_progress_rows:
-            print(progress)
+            date = progress[0]
+            goal = progress[1]
+            minutes = progress[2]
+            progress_type = progress[3]
+            if goal not in all_goals:
+                all_goals[goal] = 0
+            all_goals[goal] += minutes
+        print("|")
+        print("|")
+        for goal, minutes in all_goals.items():
+            hours = minutes/60
+            quarter = (hours/2500)*100
+            half = (hours/5000)*100
+            three_quarters = (hours/7500)*100
+            mastery = (hours/10000)*100
+            print("|\t> %s: %f hours" % (goal, hours))
+            print("|")
+            print("|\t\t> %f percent of the way to 2500 hours" % quarter)
+            print("|\t\t> %f percent of the way to 5000 hours" % half)
+            print("|\t\t> %f percent of the way to 7500 hours" % three_quarters)
+            print("|\t\t> %f percent of the way to mastery" % mastery)
+        print("|")
+        print("|")
