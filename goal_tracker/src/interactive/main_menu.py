@@ -8,7 +8,8 @@ class MainMenu(InteractiveMenu):
         super().__init__(manager, path)
         self.sub_menu_modules = [
             RecordMenu(manager, self.path),
-            ReadMenu(manager, self.path)
+            ReadMenu(manager, self.path),
+            GraphMenu(manager, self.path)
         ]
 
     def title(self):
@@ -109,5 +110,30 @@ class TotalsMenu(InteractiveMenu):
             print("|\t\t> %f percent of the way to 5000 hours" % half)
             print("|\t\t> %f percent of the way to 7500 hours" % three_quarters)
             print("|\t\t> %f percent of the way to mastery" % mastery)
+            print("|")
         print("|")
         print("|")
+
+class GraphMenu(InteractiveMenu):
+
+    def __init__(self, manager, path):
+        super().__init__(manager, path)
+        self.sub_menu_modules = [
+            BarGraphMenu(manager, self.path)
+        ]
+
+    def title(self):
+        return "Graphs"
+
+
+class BarGraphMenu(InteractiveMenu):
+
+    def title(self):
+        return "Bar"
+
+    def main_loop(self):
+        self.manager.bar_graph_all_goals()
+
+
+
+
