@@ -8,4 +8,6 @@ class Configs(object):
             self.configs = json.load(f)
 
     def get(self, value):
+        if value not in self.configs:
+            return None
         return self.configs[value]

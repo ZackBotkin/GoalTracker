@@ -38,7 +38,9 @@ class QueryRunner(object):
             sql_str = "INSERT INTO goal_progress ('goal', 'minutes', 'date', 'progress_type') VALUES ('%s', '%s', '%s', '%s')" % (goal, minutes, date, progress_type)
         self.run_sql(sql_str)
 
-    def get_goal_progress(self):
+    def get_goal_progress(self, goal_name=None):
         sql_str = "SELECT * FROM goal_progress"
+        if goal_name is not None:
+                sql_str += " WHERE goal = '%s'" % goal_name
         return self.fetch_sql(sql_str)
 

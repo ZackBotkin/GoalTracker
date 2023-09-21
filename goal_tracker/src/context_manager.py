@@ -23,7 +23,10 @@ class ContextManager(object):
 
     def bar_graph_all_goals(self):
 
-        all_goal_progress = self.query_runner.get_goal_progress()
+        if self.config.get("goal_to_graph") is not None and self.config.get("goal_to_graph") != "all":
+            all_goal_progress = self.query_runner.get_goal_progress(self.config.get("goal_to_graph"))
+        else:
+            all_goal_progress = self.query_runner.get_goal_progress()
 
         goals = {}
 
