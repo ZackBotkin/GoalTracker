@@ -13,6 +13,22 @@ class ContextManager(object):
         self.query_runner.create_all_tables()
 
 
+    def get_all_goals(self):
+        return self.query_runner.get_all_goals()
+
+    def get_goals_for_date(self, chosen_date):
+        return self.query_runner.get_all_goals(date=chosen_date)
+
+    def record_new_goal(self, goal_type, goal_date, goal_description):
+        self.query_runner.record_new_goal(goal_type, goal_date, goal_description)
+
+    def record_goal_progress(self, goal_id, progress):
+        self.query_runner.record_goal_progress(goal_id, progress)
+
+    #
+    #   OLD STUFF
+    #
+
     def record_goal_progress(self, goal, minutes, date, progress_type=None):
         self.query_runner.insert_goal_progress(goal, minutes, date, progress_type)
 
