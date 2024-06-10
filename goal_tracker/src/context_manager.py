@@ -25,19 +25,24 @@ class ContextManager(object):
     def record_goal_progress(self, goal_id, progress):
         self.query_runner.record_goal_progress(goal_id, progress)
 
+    def get_progress_for_goal(self, goal_id):
+        return self.query_runner.get_progress_for_goal(goal_id)
+
+    def complete_goal(self, goal_id):
+        self.query_runner.complete_goal(goal_id)
+
     #
     #   OLD STUFF
     #
 
-    def record_goal_progress(self, goal, minutes, date, progress_type=None):
+    def old_record_goal_progress(self, goal, minutes, date, progress_type=None):
         self.query_runner.insert_goal_progress(goal, minutes, date, progress_type)
 
-    def read_goal_progress(self):
+    def old_read_goal_progress(self):
         goal_progress = self.query_runner.get_goal_progress()
         return goal_progress
 
-
-    def bar_graph_all_goals(self):
+    def old_bar_graph_all_goals(self):
 
         if self.config.get("goal_to_graph") is not None and self.config.get("goal_to_graph") != "all":
             all_goal_progress = self.query_runner.get_goal_progress(self.config.get("goal_to_graph"))

@@ -11,14 +11,14 @@ class QueryRunner(SqlLiteQueryRunner):
         sql_str = "CREATE TABLE goals(goal_id INTEGER PRIMARY KEY AUTOINCREMENT, goal_type VARCHAR, goal_date DATE, goal_description VARCHAR, goal_completed BOOLEAN)"
         try:
             self.run_sql(sql_str)
-        except sqlite3.OperationalError:
+        except sqlite3.OperationalError as e:
             pass
 
     def create_progress_table(self):
-        sql_str = "CREATE TABLE progress(progress_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        sql_str = "CREATE TABLE progress(progress_id INTEGER PRIMARY KEY AUTOINCREMENT, goal_id INTEGER, progress_description VARCHAR, FOREIGN KEY (goal_id) REFERENCES goals(goal_id) ON DELETE CASCADE ON UPDATE CASCADE)"
         try:
             self.run_sql(sql_str)
-        except sqlite3.OperationalError:
+        except sqlite3.OperationalError as e:
             pass
 
     def get_all_goals(self, date=None):
@@ -32,31 +32,14 @@ class QueryRunner(SqlLiteQueryRunner):
         self.run_sql(sql_str)
 
     def record_goal_progress(self, goal_id, goal_progress):
-        sql_str = "INSERT INTO progress ('goal_id', 'description') VALUES ('%s', '%s')" % (goal_id, goal_progress)
-        self.run_sql(sql_st)
-
-
-    ##### OLD STUFF BELOW HERE
-
-
-    def old_create_table(self):
-        sql_str = "CREATE TABLE goal_progress(date DATE, goal VARCHAR, minutes INT, progress_type VARCHAR)"
-        try:
-            self.run_sql(sql_str)
-        except sqlite3.OperationalError:
-            pass
-
-    def old_insert_goal_progress(self, goal, minutes, date, progress_type=None):
-        sql_str = ""
-        if progress_type is None:
-            sql_str = "INSERT INTO goal_progress ('goal', 'minutes', 'date') VALUES ('%s', '%s', '%s')" % (goal, minutes, date)
-        else:
-            sql_str = "INSERT INTO goal_progress ('goal', 'minutes', 'date', 'progress_type') VALUES ('%s', '%s', '%s', '%s')" % (goal, minutes, date, progress_type)
+        sql_str = "INSERT INTO progress ('goal_id', 'progress_description') VALUES ('%s', '%s')" % (goal_id, goal_progress)
         self.run_sql(sql_str)
 
-    def old_get_goal_progress(self, goal_name=None):
-        sql_str = "SELECT * FROM goal_progress"
-        if goal_name is not None:
-                sql_str += " WHERE goal = '%s'" % goal_name
+
+    def get_progress_for_goal(self, goal_id):
+        sql_str = "SELECT * FROM progress WHERE goal_id=%s" % int(goal_id)
         return self.fetch_sql(sql_str)
 
+    def complete_goal(self, goal_id):
+        sql_str = "UPDATE goals SET goal_completed=true WHERE goal_id='%s'" % goal_id
+        self.run_sql(sql_str)

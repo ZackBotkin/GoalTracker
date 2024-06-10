@@ -9,7 +9,7 @@ class MainMenu(InteractiveMenu):
         self.sub_menu_modules = [
             RecordMenu(manager, self.path),
             ReadMenu(manager, self.path),
-            GraphMenu(manager, self.path)
+            #GraphMenu(manager, self.path)
         ]
 
     def title(self):
@@ -75,30 +75,82 @@ class RecordProgressMenu(InteractiveMenu):
         return "Progress"
 
     def main_loop(self):
-        form_results = form_results.self.interactive_form_and_validate(
-            [
+
+        all_goals = self.manager.get_all_goals()
+        menu = {}
+        number = 1
+        for goal in all_goals:
+            menu[number] = goal
+            number = number + 1
+
+        for goal in menu.items():
+            number = goal[0]
+            value = goal[1][3]
+            print (str(number) + ": " + value)
+
+        form_results = self.interactive_form_and_validate([
+            {
+                "question": "Which goal to update (select the number)",
+                "expected_response_type": "INT",
+                "return_as": "goal_selection_number",
+                "default": "",
+                "allow_empty": False
+            }
+        ])
+        if form_results is not None:
+            chosen_goal_number = form_results["goal_selection_number"]["value"]
+            chosen_goal_number = int(chosen_goal_number)
+            chosen_goal = menu[chosen_goal_number]
+            chosen_goal_id = chosen_goal[0]
+
+            form_results = self.interactive_form_and_validate([
                 {
-                    "question": "For which date? (ENTER for today)",
-                    "expected_response_type": "YYYYMMDD_Date",
-                    "return_as": "chosen_date",
+                    "question": "What progress has been made?",
+                    "expected_response_type": "VARCHAR",
+                    "return_as": "goal_progress",
                     "default": "",
-                    "allow_empty": True
+                    "allow_empty": False
                 }
-            ]
-        )
-        if form_results:
-            chosen_date = form_results["chosen_date"]["value"]
-            goals_for_date = self.manager.get_goals_for_date(chosen_date)
-            if len(goals_for_date) is None:
-                print("No goals for date")
-            else:
-                print("Add progress for which goal")
-                ## TODO
+            ])
+            if form_results is not None:
+                progress = form_results["goal_progress"]["value"]
+                self.manager.record_goal_progress(chosen_goal_id, progress)
+
 
 class RecordFinishMenu(InteractiveMenu):
 
     def title(self):
         return "Finish"
+
+    def main_loop(self):
+
+        all_goals = self.manager.get_all_goals()
+        menu = {}
+        number = 1
+        for goal in all_goals:
+            menu[number] = goal
+            number = number + 1
+
+        for goal in menu.items():
+            number = goal[0]
+            value = goal[1][3]
+            print (str(number) + ": " + value)
+
+        form_results = self.interactive_form_and_validate([
+            {
+                "question": "Which goal to update (select the number)",
+                "expected_response_type": "INT",
+                "return_as": "goal_selection_number",
+                "default": "",
+                "allow_empty": False
+            }
+        ])
+        if form_results is not None:
+            chosen_goal_number = form_results["goal_selection_number"]["value"]
+            chosen_goal_number = int(chosen_goal_number)
+            chosen_goal = menu[chosen_goal_number]
+            chosen_goal_id = chosen_goal[0]
+            self.manager.complete_goal(chosen_goal_id)
 
 #
 #   Read
@@ -112,80 +164,25 @@ class ReadMenu(InteractiveMenu):
     def main_loop(self):
         all_goals = self.manager.get_all_goals()
         for goal in all_goals:
-            print(goal)
-
-
-
-
-#
-#   Old stuff
-#
-
-class OldReadMenu(InteractiveMenu):
-
-    def __init__(self, manager, path):
-        super().__init__(manager, path)
-        self.sub_menu_modules = [
-            TotalsMenu(manager, self.path)
-        ]
-
-    def title(self):
-        return "Read"
-
-class TotalsMenu(InteractiveMenu):
-
-    def title(self):
-        return "Totals"
-
-    def main_loop(self):
-        all_goals = {}
-        all_goal_progress_rows = self.manager.read_goal_progress()
-        for progress in all_goal_progress_rows:
-            date = progress[0]
-            goal = progress[1]
-            minutes = progress[2]
-            progress_type = progress[3]
-            if goal not in all_goals:
-                all_goals[goal] = 0
-            all_goals[goal] += minutes
-        print("|")
-        print("|")
-        for goal, minutes in all_goals.items():
-            hours = minutes/60
-            quarter = (hours/2500)*100
-            half = (hours/5000)*100
-            three_quarters = (hours/7500)*100
-            mastery = (hours/10000)*100
-            print("|\t> %s: %f hours" % (goal, hours))
-            print("|")
-            print("|\t\t> %f percent of the way to 2500 hours" % quarter)
-            print("|\t\t> %f percent of the way to 5000 hours" % half)
-            print("|\t\t> %f percent of the way to 7500 hours" % three_quarters)
-            print("|\t\t> %f percent of the way to mastery" % mastery)
-            print("|")
-        print("|")
-        print("|")
-
-class GraphMenu(InteractiveMenu):
-
-    def __init__(self, manager, path):
-        super().__init__(manager, path)
-        self.sub_menu_modules = [
-            BarGraphMenu(manager, self.path)
-        ]
-
-    def title(self):
-        return "Graphs"
-
-
-class BarGraphMenu(InteractiveMenu):
-
-    def title(self):
-        return "Bar"
-
-    def main_loop(self):
-        self.manager.bar_graph_all_goals()
-
+            goal_id = goal[0]
+            goal_type = goal[1]
+            goal_date = goal[2]
+            goal_description = goal[3]
+            goal_completed = goal[4]
+            all_progress = self.manager.get_progress_for_goal(goal_id)
+            goal_completed_text = "Not Completed"
+            if goal_completed == True:
+                goal_completed_text = "Completed!"
+            print("> %s (%s)" % (goal_description, goal_completed_text))
+            if len(all_progress) == 0:
+                print ("\tNo progress")
+            else:
+                for progress in all_progress:
+                    progress_id = progress[0]
+                    goal_id = progress[1]
+                    progress_description = progress[2]
+                    print ("\t >> %s" % progress_description)
+            print("\n")
 
 
 

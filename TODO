@@ -1,7 +1,19 @@
 
 
+
+
 features
-    - daily goal
-        -- set at the beginnign of day
     - weekly goal
         -- set at the beginning of the week
+
+    - way to only show goals for a current day
+
+    - calendar viewer, able to see completed goals for a given day
+
+
+#########################
+done features
+    - daily goal
+        -- set at the beginnign of day
+    - can mark progress for saved goals
+    - can mark resolution of finished goals
