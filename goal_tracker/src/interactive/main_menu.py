@@ -13,7 +13,7 @@ class MainMenu(InteractiveMenu):
         ]
 
     def title(self):
-        return "Main"
+        return "Goal Tracker"
 
 #
 #   Record
@@ -76,7 +76,9 @@ class RecordProgressMenu(InteractiveMenu):
 
     def main_loop(self):
 
-        all_goals = self.manager.get_all_goals()
+        now = datetime.now()
+        now_str = datetime.now().strftime('%Y-%m-%d')
+        all_goals = self.manager.get_goals_for_date(now_str)
         menu = {}
         number = 1
         for goal in all_goals:
@@ -124,7 +126,9 @@ class RecordFinishMenu(InteractiveMenu):
 
     def main_loop(self):
 
-        all_goals = self.manager.get_all_goals()
+        now = datetime.now()
+        now_str = datetime.now().strftime('%Y-%m-%d')
+        all_goals = self.manager.get_goals_for_date(now_str)
         menu = {}
         number = 1
         for goal in all_goals:
@@ -162,7 +166,9 @@ class ReadMenu(InteractiveMenu):
         return "Read"
 
     def main_loop(self):
-        all_goals = self.manager.get_all_goals()
+        now = datetime.now()
+        now_str = datetime.now().strftime('%Y-%m-%d')
+        all_goals = self.manager.get_goals_for_date(now_str)
         for goal in all_goals:
             goal_id = goal[0]
             goal_type = goal[1]

@@ -1,19 +1,35 @@
-
-
-
-
+#########################
 features
+#########################
+
+    - be able to input goals for tomorrow
+        -- can kind of already do this with manually inputting the date
+        -- would be nice to be able to type in "tomorrow", or "next friday" or something like that
+
     - weekly goal
         -- set at the beginning of the week
 
-    - way to only show goals for a current day
-
     - calendar viewer, able to see completed goals for a given day
+
+#########################
+bugs
+#########################
+
+    None so far
+
+
+----------------------------------------------------------------------------
 
 
 #########################
 done features
+#########################
+
     - daily goal
         -- set at the beginnign of day
+
     - can mark progress for saved goals
+
     - can mark resolution of finished goals
+
+    - way to only show goals for a current day
