@@ -33,19 +33,23 @@ class RecordMenu(InteractiveMenu):
 
 class RecordNewMenu(InteractiveMenu):
 
+    def __init__(self, manager, path=[]):
+        super().__init__(manager, path)
+        self.sub_menu_modules = [
+            RecordNewAuxiliaryGoalMenu(manager, self.path)
+        ]
+
     def title(self):
         return "New"
+
+class RecordNewAuxiliaryGoalMenu(InteractiveMenu):
+
+    def title(self):
+        return "Auxiliary"
 
     def main_loop(self):
         form_results = self.interactive_form_and_validate(
             [
-                {
-                    "question": "Daily or Weekly goal?",
-                    "expected_response_type": "VARCHAR",
-                    "return_as": "goal_type",
-                    "default": "",
-                    "allow_empty": False
-                },
                 {
                     "question": "What date? (ENTER for today)",
                     "expected_response_type": "YYYYMMDD_Date",
@@ -63,10 +67,9 @@ class RecordNewMenu(InteractiveMenu):
             ]
         )
         if form_results is not None:
-            goal_type = form_results["goal_type"]["value"]
             goal_date = form_results["goal_date"]["value"]
             goal_description = form_results["goal_description"]["value"]
-            self.manager.record_new_goal(goal_type, goal_date, goal_description)
+            self.manager.record_new_auxiliary_goal(goal_date, goal_description)
 
 
 class RecordProgressMenu(InteractiveMenu):
@@ -78,7 +81,7 @@ class RecordProgressMenu(InteractiveMenu):
 
         now = datetime.now()
         now_str = datetime.now().strftime('%Y-%m-%d')
-        all_goals = self.manager.get_goals_for_date(now_str)
+        all_goals = self.manager.get_auxiliary_goals_for_date(now_str)
         menu = {}
         number = 1
         for goal in all_goals:
@@ -87,8 +90,12 @@ class RecordProgressMenu(InteractiveMenu):
 
         for goal in menu.items():
             number = goal[0]
-            value = goal[1][3]
-            print (str(number) + ": " + value)
+            auxiliary_goal_description = goal[1][2]
+            auxiliary_goal_completed = goal[1][3]
+            auxiliary_goal_completed_text = "Not Completed"
+            if auxiliary_goal_completed == 1:
+                auxiliary_goal_completed_text = "Completed"
+            print (str(number) + ": " + auxiliary_goal_description + " (" + auxiliary_goal_completed_text + ")\n")
 
         form_results = self.interactive_form_and_validate([
             {
@@ -97,7 +104,7 @@ class RecordProgressMenu(InteractiveMenu):
                 "return_as": "goal_selection_number",
                 "default": "",
                 "allow_empty": False
-            }
+            },
         ])
         if form_results is not None:
             chosen_goal_number = form_results["goal_selection_number"]["value"]
@@ -112,11 +119,22 @@ class RecordProgressMenu(InteractiveMenu):
                     "return_as": "goal_progress",
                     "default": "",
                     "allow_empty": False
+                },
+                {
+                    "question": "What percentage is the goal now at? (enter to skip)",
+                    "expected_response_type": "FLOAT",
+                    "return_as": "goal_percentage_completion",
+                    "default": None,
+                    "allow_empty": True ## TODO : there is a bug here because of the expected response type, we can't allow None
                 }
             ])
             if form_results is not None:
                 progress = form_results["goal_progress"]["value"]
-                self.manager.record_goal_progress(chosen_goal_id, progress)
+                percentage = form_results["goal_percentage_completion"]["value"]
+                self.manager.record_auxiliary_goal_progress(chosen_goal_id, progress, percentage)
+
+                if percentage is not None and float(percentage) >= 100:
+                    self.manager.complete_auxiliary_goal(chosen_goal_id)
 
 
 class RecordFinishMenu(InteractiveMenu):
@@ -128,7 +146,7 @@ class RecordFinishMenu(InteractiveMenu):
 
         now = datetime.now()
         now_str = datetime.now().strftime('%Y-%m-%d')
-        all_goals = self.manager.get_goals_for_date(now_str)
+        all_goals = self.manager.get_auxiliary_goals_for_date(now_str)
         menu = {}
         number = 1
         for goal in all_goals:
@@ -137,7 +155,7 @@ class RecordFinishMenu(InteractiveMenu):
 
         for goal in menu.items():
             number = goal[0]
-            value = goal[1][3]
+            value = goal[1][2]
             print (str(number) + ": " + value)
 
         form_results = self.interactive_form_and_validate([
@@ -154,7 +172,7 @@ class RecordFinishMenu(InteractiveMenu):
             chosen_goal_number = int(chosen_goal_number)
             chosen_goal = menu[chosen_goal_number]
             chosen_goal_id = chosen_goal[0]
-            self.manager.complete_goal(chosen_goal_id)
+            self.manager.complete_auxiliary_goal(chosen_goal_id)
 
 #
 #   Read
@@ -168,14 +186,13 @@ class ReadMenu(InteractiveMenu):
     def main_loop(self):
         now = datetime.now()
         now_str = datetime.now().strftime('%Y-%m-%d')
-        all_goals = self.manager.get_goals_for_date(now_str)
+        all_goals = self.manager.get_auxiliary_goals_for_date(now_str)
         for goal in all_goals:
             goal_id = goal[0]
-            goal_type = goal[1]
-            goal_date = goal[2]
-            goal_description = goal[3]
-            goal_completed = goal[4]
-            all_progress = self.manager.get_progress_for_goal(goal_id)
+            goal_date = goal[1]
+            goal_description = goal[2]
+            goal_completed = goal[3]
+            all_progress = self.manager.get_progress_for_auxiliary_goal(goal_id)
             goal_completed_text = "Not Completed"
             if goal_completed == True:
                 goal_completed_text = "Completed!"
