@@ -1,8 +1,7 @@
 import argparse
-
-from goal_tracker.src.config.config import Configs
 from goal_tracker.src.context_manager import ContextManager
 from goal_tracker.src.interactive.main_menu import MainMenu
+from config_reader.src.config_reader import Configs
 
 def main():
 
