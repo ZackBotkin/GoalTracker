@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from interactive_menu.src.interactive_menu import InteractiveMenu
 
 
@@ -180,12 +180,83 @@ class RecordFinishMenu(InteractiveMenu):
 
 class ReadMenu(InteractiveMenu):
 
+    def __init__(self, manager, path):
+        super().__init__(manager, path)
+        self.sub_menu_modules = [
+            ReadTodayMenu(manager, self.path),
+            ReadTomorrowMenu(manager, self.path),
+            ReadYesterdayMenu(manager, self.path)
+        ]
+
     def title(self):
         return "Read"
+
+class ReadTodayMenu(InteractiveMenu):
+
+    def title(self):
+        return "Today"
 
     def main_loop(self):
         now = datetime.now()
         now_str = datetime.now().strftime('%Y-%m-%d')
+        all_goals = self.manager.get_auxiliary_goals_for_date(now_str)
+        for goal in all_goals:
+            goal_id = goal[0]
+            goal_date = goal[1]
+            goal_description = goal[2]
+            goal_completed = goal[3]
+            all_progress = self.manager.get_progress_for_auxiliary_goal(goal_id)
+            goal_completed_text = "Not Completed"
+            if goal_completed == True:
+                goal_completed_text = "Completed!"
+            print("> %s (%s)" % (goal_description, goal_completed_text))
+            if len(all_progress) == 0:
+                print ("\tNo progress")
+            else:
+                for progress in all_progress:
+                    progress_id = progress[0]
+                    goal_id = progress[1]
+                    progress_description = progress[2]
+                    print ("\t >> %s" % progress_description)
+            print("\n")
+
+class ReadTomorrowMenu(InteractiveMenu):
+
+    def title(self):
+        return "Tomorrow"
+
+    def main_loop(self):
+        now = datetime.now()
+        now_str = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+        all_goals = self.manager.get_auxiliary_goals_for_date(now_str)
+        for goal in all_goals:
+            goal_id = goal[0]
+            goal_date = goal[1]
+            goal_description = goal[2]
+            goal_completed = goal[3]
+            all_progress = self.manager.get_progress_for_auxiliary_goal(goal_id)
+            goal_completed_text = "Not Completed"
+            if goal_completed == True:
+                goal_completed_text = "Completed!"
+            print("> %s (%s)" % (goal_description, goal_completed_text))
+            if len(all_progress) == 0:
+                print ("\tNo progress")
+            else:
+                for progress in all_progress:
+                    progress_id = progress[0]
+                    goal_id = progress[1]
+                    progress_description = progress[2]
+                    print ("\t >> %s" % progress_description)
+            print("\n")
+
+class ReadYesterdayMenu(InteractiveMenu):
+
+    def title(self):
+        return "Yesterday"
+
+    def main_loop(self):
+        now = datetime.now()
+        now_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
         all_goals = self.manager.get_auxiliary_goals_for_date(now_str)
         for goal in all_goals:
             goal_id = goal[0]
