@@ -88,14 +88,22 @@ class RecordProgressMenu(InteractiveMenu):
             menu[number] = goal
             number = number + 1
 
+        print("\n")
         for goal in menu.items():
             number = goal[0]
+            auxiliary_goal_id = goal[1][0]
+            auxiliary_goal_date = goal[1][1]
             auxiliary_goal_description = goal[1][2]
             auxiliary_goal_completed = goal[1][3]
             auxiliary_goal_completed_text = "Not Completed"
             if auxiliary_goal_completed == 1:
-                auxiliary_goal_completed_text = "Completed"
+                auxiliary_goal_completed_text = "Completed!"
+            else:
+                progress_percentage = self.manager.get_percentage_done_for_goal(auxiliary_goal_id)
+                auxiliary_goal_completed_text = "%i%% done" % progress_percentage
+
             print (str(number) + ": " + auxiliary_goal_description + " (" + auxiliary_goal_completed_text + ")\n")
+        print("\n")
 
         form_results = self.interactive_form_and_validate([
             {
@@ -209,6 +217,10 @@ class ReadTodayMenu(InteractiveMenu):
             goal_completed_text = "Not Completed"
             if goal_completed == True:
                 goal_completed_text = "Completed!"
+            else:
+                progress_percentage = self.manager.get_percentage_done_for_goal(goal_id)
+                goal_completed_text = "%i%% done" % progress_percentage
+
             print("> %s (%s)" % (goal_description, goal_completed_text))
             if len(all_progress) == 0:
                 print ("\tNo progress")
@@ -238,6 +250,9 @@ class ReadTomorrowMenu(InteractiveMenu):
             goal_completed_text = "Not Completed"
             if goal_completed == True:
                 goal_completed_text = "Completed!"
+            else:
+                progress_percentage = self.manager.get_percentage_done_for_goal(goal_id)
+                goal_completed_text = "%i%% done" % progress_percentage
             print("> %s (%s)" % (goal_description, goal_completed_text))
             if len(all_progress) == 0:
                 print ("\tNo progress")
@@ -267,6 +282,9 @@ class ReadYesterdayMenu(InteractiveMenu):
             goal_completed_text = "Not Completed"
             if goal_completed == True:
                 goal_completed_text = "Completed!"
+            else:
+                progress_percentage = self.manager.get_percentage_done_for_goal(goal_id)
+                goal_completed_text = "%i%% done" % progress_percentage
             print("> %s (%s)" % (goal_description, goal_completed_text))
             if len(all_progress) == 0:
                 print ("\tNo progress")

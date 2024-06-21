@@ -24,6 +24,19 @@ class ContextManager(object):
     def record_auxiliary_goal_progress(self, goal_id, description, percentage):
         self.query_runner.record_auxiliary_goal_progress(goal_id, description, percentage)
 
+    ## TODO : maybe.. this assumes we can never make backwards progress
+    def get_percentage_done_for_goal(self, goal_id):
+        all_progress = self.get_progress_for_auxiliary_goal(goal_id)
+        highest_percentage = 0
+        for progress in all_progress:
+            progress_id = progress[0]
+            goal_id = progress[1]
+            description = progress[2]
+            this_percentage = float(progress[3])
+            if this_percentage > highest_percentage:
+                highest_percentage = this_percentage
+        return highest_percentage
+
     def get_progress_for_auxiliary_goal(self, goal_id):
         return self.query_runner.get_progress_for_auxiliary_goal(goal_id)
 

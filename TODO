@@ -2,15 +2,39 @@
 features
 #########################
 
-    - be able to input goals for tomorrow
-        -- can kind of already do this with manually inputting the date
-        -- would be nice to be able to type in "tomorrow", or "next friday" or something like that
-        -- that honestly would be more of an improvement for interactive menu, add to that project's TODO
-
     - concept of "bigger" goals
         -- can tie "daily" goals to them, and will help drive daily goals
         -- will be easier to then graph how often i am hitting those, whem i am falling short, etc
+        -- to link these to auxiliary goals via foreign key, we need to first insert an "other/default" primary goal
+        -- and give all previous data this designation
 
+    - mark goals as active/inactive
+        -- this would be different than "completed"
+        -- some of them might be like "won't do" type resolution
+
+    - roll over incomplete active goals
+        -- if we get 80% of the way there, it would be nice to have some ability to roll it over to the next day to finish
+
+    - set auto repeating auxiliary goal
+        -- set "meditate 10 minutes" goal every day for however many N days
+
+    - pie graph viewer
+        -- each section of pie is a goal
+        -- red --> green gradient based on completeness
+        -- 0 progress incomplete is dark red
+        -- 100 progress complete is dark green
+
+    - pie graph viewer
+        -- once auxilliary goals are tied to primary goals
+        -- it would be cool to also have this chart to address what percentage of each
+        -- day goes towards what type of goals
+        -- all one color per type, and then subdivided lines or w/e within that slice
+
+    - some way to calculate "% of day accomplished" based on goals set
+
+    - auxiliary goal difficulty (1-10?)
+        -- this will help inform the stat from above
+        -- more progress on more difficult goals == bigger percentage of day complete, ideally
 
     - calendar viewer, able to see completed goals for a given day
 
@@ -37,3 +61,10 @@ done features
     - can mark resolution of finished goals
 
     - way to only show goals for a current day
+
+    - be able to input goals for tomorrow
+        -- can kind of already do this with manually inputting the date
+        -- would be nice to be able to type in "tomorrow", or "next friday" or something like that
+        -- that honestly would be more of an improvement for interactive menu, add to that project's TODO
+
+    - function to calculate the highest % of progress completed, and display that instead of "not completed"
