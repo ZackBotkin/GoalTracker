@@ -9,7 +9,7 @@ class MainMenu(InteractiveMenu):
         self.sub_menu_modules = [
             RecordMenu(manager, self.path),
             ReadMenu(manager, self.path),
-            #GraphMenu(manager, self.path)
+            GraphMenu(manager, self.path)
         ]
 
     def title(self):
@@ -296,5 +296,44 @@ class ReadYesterdayMenu(InteractiveMenu):
                     print ("\t >> %s" % progress_description)
             print("\n")
 
+class GraphMenu(InteractiveMenu):
+
+    def __init__(self, manager, path=[]):
+        super().__init__(manager, path)
+        self.sub_menu_modules = [
+            PieChartMenu(manager, self.path),
+            AllPieChartMenu(manager, self.path)
+        ]
+
+    def title(self):
+        return "Graph"
 
 
+class PieChartMenu(InteractiveMenu):
+
+    def title(self):
+        return "Date"
+
+    def main_loop(self):
+        form_results = self.interactive_form_and_validate(
+            [
+                {
+                    "question": "What date? (ENTER for today)",
+                    "expected_response_type": "YYYYMMDD_Date",
+                    "return_as": "goal_date",
+                    "default": datetime.now().strftime("%Y-%m-%d"),
+                    "allow_empty": False
+                }
+            ]
+        )
+        if form_results is not None:
+            date_str = form_results["goal_date"]["value"]
+            self.manager.pie_chart_for_date(date_str)
+
+class AllPieChartMenu(InteractiveMenu):
+
+    def title(self):
+        return "All"
+
+    def main_loop(self):
+        self.manager.plot_all_pie_charts()
