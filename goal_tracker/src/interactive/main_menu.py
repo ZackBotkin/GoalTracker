@@ -311,6 +311,29 @@ class GraphMenu(InteractiveMenu):
 
 class PieChartMenu(InteractiveMenu):
 
+    def __init__(self, manager, path=[]):
+        super().__init__(manager, path)
+        self.sub_menu_modules = [
+            TodayPieChartMenu(manager, self.path),
+            DatePieChartMenu(manager, self.path),
+            AllPieChartMenu(manager, self.path),
+        ]
+
+    def title(self):
+        return "Pie"
+
+
+class TodayPieChartMenu(InteractiveMenu):
+
+    def title(self):
+        return "Today"
+
+    def main_loop(self):
+        date_str = datetime.now().strftime("%Y-%m-%d")
+        self.manager.pie_chart_for_date(date_str)
+
+class DatePieChartMenu(InteractiveMenu):
+
     def title(self):
         return "Date"
 
